@@ -639,6 +639,12 @@ pub struct Config {
     #[dynamic(default = "default_inactive_pane_hsb")]
     pub inactive_pane_hsb: HsbTransform,
 
+    /// When set, draws a solid border around the active pane.
+    /// The border is not drawn when the tab has only a single
+    /// visible pane (including when a pane is zoomed).
+    #[dynamic(default)]
+    pub active_pane_border: Option<ActivePaneBorder>,
+
     #[dynamic(default = "default_one_point_oh")]
     pub text_background_opacity: f32,
 
@@ -1971,6 +1977,25 @@ impl Default for WindowPadding {
             bottom: default_half_cell(),
         }
     }
+}
+
+#[derive(FromDynamic, ToDynamic, Clone, Copy, Debug)]
+pub struct ActivePaneBorder {
+    #[dynamic(
+        try_from = "crate::units::PixelUnit",
+        default = "default_active_pane_border_width"
+    )]
+    pub width: Dimension,
+    #[dynamic(default = "default_active_pane_border_color")]
+    pub color: RgbaColor,
+}
+
+const fn default_active_pane_border_width() -> Dimension {
+    Dimension::Points(2.)
+}
+
+fn default_active_pane_border_color() -> RgbaColor {
+    (0xff, 0x9e, 0x3b).into()
 }
 
 #[derive(FromDynamic, ToDynamic, Clone, Copy, Debug, Default)]

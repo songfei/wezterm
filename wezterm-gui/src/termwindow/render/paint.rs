@@ -249,15 +249,15 @@ impl crate::TermWindow {
             .context("filled_rectangle for window background")?;
         }
 
-        for pos in panes {
+        for pos in &panes {
             if pos.is_active {
-                self.update_text_cursor(&pos);
+                self.update_text_cursor(pos);
                 if focused {
                     pos.pane.advise_focus();
                     mux::Mux::get().record_focus_for_current_identity(pos.pane.pane_id());
                 }
             }
-            self.paint_pane(&pos, &mut layers).context("paint_pane")?;
+            self.paint_pane(pos, &mut layers).context("paint_pane")?;
         }
 
         if let Some(pane) = self.get_active_pane_or_overlay() {
@@ -267,6 +267,9 @@ impl crate::TermWindow {
                     .context("paint_split")?;
             }
         }
+
+        self.paint_active_pane_border(&mut layers, &panes)
+            .context("paint_active_pane_border")?;
 
         if self.show_tab_bar {
             self.paint_tab_bar(&mut layers).context("paint_tab_bar")?;
